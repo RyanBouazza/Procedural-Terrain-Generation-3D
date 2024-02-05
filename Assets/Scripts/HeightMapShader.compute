@@ -1,0 +1,22 @@
+#pragma kernel CSMain
+
+RWTexture2D<float> Result;
+Texture2D<float> Noise;
+float resolution;
+
+SamplerState samplerPointClamp {
+  Filter = MIN_MAG_MIP_POINT;
+  AddressU = Clamp;
+  AddressV = Clamp;
+};
+
+[numthreads(8, 8, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+  float xPos = id.x / resolution;
+  float yPos = id.y / resolution;
+
+  float height = Noise.SampleLevel(samplerPointClamp, float2(xPos, yPos), 0);
+
+  Result[id.xy] = height;
+}
