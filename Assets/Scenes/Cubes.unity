@@ -293,10 +293,10 @@ RectTransform:
   - {fileID: 236400160}
   m_Father: {fileID: 1541990110}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -620.0838, y: 328}
-  m_SizeDelta: {x: 211.8324, y: 63.5573}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 142, y: -141.22137}
+  m_SizeDelta: {x: 211.8324, y: 63.557312}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &589042576
 MonoBehaviour:
@@ -617,7 +617,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   computeShader: {fileID: 7200000, guid: 4770396e68c07a342a8333a62f8e301d, type: 3}
-  renderTexture: {fileID: 0}
   cubePrefab: {fileID: 2449561773376019348, guid: 97ef17d18f636cc40ab42a0ba527f754, type: 3}
   count: 50
   repetitions: 10
@@ -894,10 +893,10 @@ RectTransform:
   - {fileID: 1771360402}
   m_Father: {fileID: 1541990110}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -620.0838, y: 405.22137}
-  m_SizeDelta: {x: 211.8324, y: 63.5573}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 142, y: -64}
+  m_SizeDelta: {x: 211.8324, y: 63.557312}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1957878184
 MonoBehaviour:
