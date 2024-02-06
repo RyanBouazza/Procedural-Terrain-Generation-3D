@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class TerrainComputeShader : MonoBehaviour
 {
-  public Texture2D noiseTexture;
   public ComputeShader computeShader;
   public Material chunkMaterial;
+  public Texture2D terrainHeightMap;
   public int size = 512;
   public int chunkSize = 64;
   public float heightMultiplier = 25f;
 
-  private float[] data;
   private int numChunks;
+  private List<GameObject> chunkObjects = new List<GameObject>();
 
   private void Start() {
-    data = new float[size * size];
+    OnRandomize();
+  }
 
+  public void OnRandomize() {
     RandomizeTerrain();
     Vector3[] allVertices = GenerateVertices();
+
+    foreach (GameObject chunk in chunkObjects) {
+      Destroy(chunk);
+    }
+    chunkObjects.Clear();
 
     numChunks = size / chunkSize;
 
@@ -35,7 +42,10 @@ public class TerrainComputeShader : MonoBehaviour
     for (int zPos = 0; zPos < size; zPos++) {
       for (int xPos = 0; xPos < size; xPos++) {
         int vertexIndex = zPos * size + xPos;
-        float height = data[vertexIndex] * heightMultiplier;
+
+        Color pixelColor = terrainHeightMap.GetPixel(xPos, zPos);
+        float height = pixelColor.r * heightMultiplier;
+
         allVertices[vertexIndex] = new Vector3(xPos, height, zPos);
       }
     }
@@ -81,17 +91,29 @@ public class TerrainComputeShader : MonoBehaviour
     GameObject chunk = new GameObject($"Chunk {chunkZ} {chunkX}");
     chunk.AddComponent<MeshFilter>().mesh = mesh;
     chunk.AddComponent<MeshRenderer>().material = chunkMaterial;
+    chunkObjects.Add(chunk);
   }
 
   public void RandomizeTerrain() {
-    ComputeBuffer resultBuffer = new ComputeBuffer(data.Length, sizeof(float));
-    computeShader.SetBuffer(0, "Result", resultBuffer);
-    computeShader.SetTexture(0, "Noise", noiseTexture);
-    computeShader.SetFloat("resolution", size); // ??
+    var heightMap = new RenderTexture(size, size, 24);
+    heightMap.enableRandomWrite = true;
+    heightMap.Create();
+
+    computeShader.SetTexture(0, "Result", heightMap);
+    computeShader.SetFloat("resolution", size);
+    computeShader.SetFloat("scale", 20);
+    computeShader.SetFloat("offsetX", Random.Range(0f, 99999f));
+    computeShader.SetFloat("offsetY", Random.Range(0f, 99999f));
     computeShader.Dispatch(0, size / 8, size / 8, 1);
 
-    resultBuffer.GetData(data);
+    terrainHeightMap = RenderTextureToTexture2D(heightMap);
+  }
 
-    resultBuffer.Release();
+  private Texture2D RenderTextureToTexture2D(RenderTexture rTex) {
+    Texture2D tex = new Texture2D(rTex.width, rTex.height, TextureFormat.RGBA32, false);
+    RenderTexture.active = rTex;
+    tex.ReadPixels(new Rect(0, 0, rTex.width, rTex.height), 0, 0);
+    tex.Apply();
+    return tex;
   }
 }

@@ -1,22 +1,23 @@
 #pragma kernel CSMain
 
-RWTexture2D<float> Result;
-Texture2D<float> Noise;
+#include "Assets/Packages/SimplexNoise2D.hlsl"
+
+RWTexture2D<float4> Result;
+
+float scale;
+float offsetX;
+float offsetY;
 float resolution;
 
-SamplerState samplerPointClamp {
-  Filter = MIN_MAG_MIP_POINT;
-  AddressU = Clamp;
-  AddressV = Clamp;
-};
-
-[numthreads(8, 8, 1)]
+[numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-  float xPos = id.x / resolution;
-  float yPos = id.y / resolution;
+  float xCoord = (float)id.x / resolution / 2 * scale + offsetX;
+  float yCoord = (float)id.y / resolution / 2 * scale + offsetY;
 
-  float height = Noise.SampleLevel(samplerPointClamp, float2(xPos, yPos), 0);
+  float sample = SimplexNoise(float2(xCoord, yCoord)) + 0.5 * SimplexNoise(float2(2 * xCoord, 2 * yCoord)) + 0.25 * SimplexNoise(float2(4 * xCoord, 4 * yCoord));
+  sample = sample / (1 + 0.5 + 0.25);
+  sample = (sample + 0.4) * sample;
 
-  Result[id.xy] = height;
+  Result[id.xy] = float4(sample, sample, sample, 1);
 }
